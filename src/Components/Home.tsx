@@ -30,6 +30,7 @@ const Cell = styled.div<ICellProps>`
   width: 100%;
   height: 100%;
   background-color: ${(props) => (props.isChecked ? "tomato" : "whitesmoke")};
+  transition: background 1s ease-in-out;
 `;
 
 const Imoji = styled.span`
@@ -41,12 +42,12 @@ const Imoji = styled.span`
 `;
 
 const Home = () => {
-  const [field] = useField();
+  const [field, setField] = useField();
   const [startCoord] = useStartPoint();
   const [endCoord] = useEndPoint();
-  const [foo] = useDijkstra(startCoord, endCoord, field);
+  const [startDijkstra] = useDijkstra(startCoord, endCoord, field, setField);
 
-  console.log(field);
+  // console.log(field);
 
   const handleMouseDown = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -70,7 +71,7 @@ const Home = () => {
 
   return (
     <>
-      <button>START</button>
+      <button onClick={startDijkstra}>START</button>
       <Grid>
         {field.map((row, rowIdx) =>
           row.map((cell, cellIdx) => (

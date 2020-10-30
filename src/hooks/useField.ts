@@ -23,8 +23,11 @@ const getInitialField = () => {
   return initialField;
 };
 
-export const useField = (): [TCell[][]] => {
+export const useField = (): [
+  TCell[][],
+  React.Dispatch<React.SetStateAction<ICellProps[][]>>
+] => {
   const [field, setField] = useState(getInitialField);
 
-  return [field];
+  return [field, setField];
 };
