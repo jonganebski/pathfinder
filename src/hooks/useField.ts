@@ -10,6 +10,7 @@ const getInitialField = () => {
     isBlocked: false,
     isStartPoint: false,
     isEndPoint: false,
+    before: [],
   };
   const baseArr: number[][] = Array(ROWS).fill(Array(COLS).fill(0));
 
