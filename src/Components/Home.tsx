@@ -1,4 +1,4 @@
-import React, { cloneElement } from "react";
+import React, { cloneElement, useState } from "react";
 import styled from "styled-components";
 import { COLS, ROWS } from "../constants";
 import { useDijkstra } from "../hooks/useDijkstra";
@@ -29,8 +29,10 @@ const Cell = styled.div<ICellProps>`
   position: relative;
   width: 100%;
   height: 100%;
-  background-color: ${(props) => (props.isChecked ? "tomato" : "whitesmoke")};
-  transition: background 1s ease-in-out;
+  background-color: ${(props) =>
+    props.isChecked ? "tomato" : props.isBlocked ? "black" : "whitesmoke"};
+  transition: ${(props) =>
+    props.isChecked ? "background 1s ease-in-out" : "none"};
 `;
 
 const Imoji = styled.span`
@@ -43,31 +45,74 @@ const Imoji = styled.span`
 
 const Home = () => {
   const [field, setField] = useField();
-  const [startCoord] = useStartPoint();
-  const [endCoord] = useEndPoint();
+  const [
+    startCoord,
+    isMovingStartPoint,
+    startPointMouseDown,
+    startPointMouseUp,
+  ] = useStartPoint();
+  const [
+    endCoord,
+    isMovingEndPoint,
+    endPointMouseDown,
+    endPointMouseUp,
+  ] = useEndPoint();
   const [startDijkstra] = useDijkstra(startCoord, endCoord, field, setField);
 
   // console.log(field);
+  console.log("isMovingEndPoint: ", isMovingEndPoint);
+  console.log("isMovingStartPoint: ", isMovingStartPoint);
 
   const handleMouseDown = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
     cell: ICellProps
   ) => {
+    e.preventDefault();
     if (cell.isStartPoint) {
-      console.log(cell.isStartPoint);
+      startPointMouseDown(cell);
     }
     if (cell.isEndPoint) {
+      endPointMouseDown(cell);
     }
     if (!cell.isStartPoint && !cell.isEndPoint) {
     }
+    setField([...field]);
   };
 
   const handleMouseUp = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
     cell: ICellProps
   ) => {
-    console.log(cell.isStartPoint);
+    if (isMovingStartPoint) {
+      startPointMouseUp(cell, e.currentTarget.id);
+    }
+    if (isMovingEndPoint) {
+      endPointMouseUp(cell, e.currentTarget.id);
+    }
+    setField([...field]);
   };
+
+  const handleMouseEnter = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    cell: ICellProps
+  ) => {
+    if (e.buttons === 1) {
+      if (
+        !isMovingStartPoint &&
+        !isMovingEndPoint &&
+        !cell.isStartPoint &&
+        !cell.isEndPoint
+      ) {
+        cell.isBlocked = true;
+        setField([...field]);
+      }
+    }
+  };
+
+  const handleMouseLeave = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    cell: ICellProps
+  ) => {};
 
   return (
     <>
@@ -77,6 +122,7 @@ const Home = () => {
           row.map((cell, cellIdx) => (
             <Cell
               key={`${rowIdx}-${cellIdx}`}
+              id={`${rowIdx}-${cellIdx}`}
               isChecked={cell.isChecked}
               isBlocked={cell.isBlocked}
               isStartPoint={cell.isStartPoint}
@@ -84,6 +130,8 @@ const Home = () => {
               before={cell.before}
               onMouseDown={(e) => handleMouseDown(e, cell)}
               onMouseUp={(e) => handleMouseUp(e, cell)}
+              onMouseEnter={(e) => handleMouseEnter(e, cell)}
+              onMouseLeave={(e) => handleMouseLeave(e, cell)}
             >
               {cell.isStartPoint && <Imoji>🐮</Imoji>}
               {cell.isEndPoint && <Imoji>🌳</Imoji>}
