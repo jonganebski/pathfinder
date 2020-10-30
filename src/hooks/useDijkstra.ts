@@ -35,17 +35,40 @@ export const useDijkstra = (
     });
   };
 
+  const trackDown = (cell: TCell) => {
+    for (let i = 0; i < field.flat().length; i++) {
+      const cellBefore = field[cell.before[0]][cell.before[1]];
+      cell.isTrack = true;
+      console.log(cellBefore);
+      setField([...field]);
+      if (cellBefore.isStartPoint) {
+        return true;
+      }
+      const isFinished = trackDown(cellBefore);
+      if (isFinished) {
+        return true;
+      }
+    }
+  };
+
   const startDijkstra = async () => {
-    for (let i = 0; i < 18; i++) {
+    for (let i = 0; i < field.flat().length; i++) {
       console.log("for loop");
       const checked: number[][] = [];
-      console.log(borderCoords);
       for (let j = 0; j < borderCoords.length; j++) {
-        const uncheckedCoords = getUncheckedCells(borderCoords[j]);
+        const borderCoord = borderCoords[j];
+        const uncheckedCoords = getUncheckedCells(borderCoord);
         for (let k = 0; k < uncheckedCoords.length; k++) {
           const coord = uncheckedCoords[k];
-          field[coord[0]][coord[1]].isChecked = true;
+          const cell = field[coord[0]][coord[1]];
+          if (cell.isBlocked) continue;
+          cell.isChecked = true;
+          cell.before = borderCoord;
           setField([...field]);
+          if (cell.isEndPoint) {
+            trackDown(cell);
+            return;
+          }
           checked.push(coord);
           await timer(LOOP_DELAY);
         }

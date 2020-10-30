@@ -11,6 +11,7 @@ export interface ICellProps {
   isBlocked: boolean;
   isStartPoint: boolean;
   isEndPoint: boolean;
+  isTrack: boolean;
   before: number[];
 }
 
@@ -30,7 +31,13 @@ const Cell = styled.div<ICellProps>`
   width: 100%;
   height: 100%;
   background-color: ${(props) =>
-    props.isChecked ? "tomato" : props.isBlocked ? "black" : "whitesmoke"};
+    props.isChecked && props.isTrack
+      ? "yellow"
+      : props.isBlocked
+      ? "black"
+      : props.isChecked
+      ? "tomato"
+      : "whitesmoke"};
   transition: ${(props) =>
     props.isChecked ? "background 1s ease-in-out" : "none"};
 `;
@@ -60,8 +67,8 @@ const Home = () => {
   const [startDijkstra] = useDijkstra(startCoord, endCoord, field, setField);
 
   // console.log(field);
-  console.log("isMovingEndPoint: ", isMovingEndPoint);
-  console.log("isMovingStartPoint: ", isMovingStartPoint);
+  // console.log("isMovingEndPoint: ", isMovingEndPoint);
+  // console.log("isMovingStartPoint: ", isMovingStartPoint);
 
   const handleMouseDown = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -127,6 +134,7 @@ const Home = () => {
               isBlocked={cell.isBlocked}
               isStartPoint={cell.isStartPoint}
               isEndPoint={cell.isEndPoint}
+              isTrack={cell.isTrack}
               before={cell.before}
               onMouseDown={(e) => handleMouseDown(e, cell)}
               onMouseUp={(e) => handleMouseUp(e, cell)}
