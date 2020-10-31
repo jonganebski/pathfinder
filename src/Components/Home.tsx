@@ -1,4 +1,4 @@
-import React, { cloneElement } from "react";
+import React from "react";
 import styled from "styled-components";
 import { useDijkstra } from "../hooks/useDijkstra";
 import { useEndPoint } from "../hooks/useEndPoint";
@@ -29,7 +29,7 @@ const Wrapper = styled.div`
     "header header"
     "display control";
   grid-template-columns: 2fr 1fr;
-  grid-template-rows: 1fr 10fr;
+  grid-template-rows: 70px auto;
 `;
 
 // ----------- MAIN COMPONENT -----------
@@ -43,12 +43,14 @@ const Home = () => {
     isMovingStartPoint,
     startPointMouseDown,
     startPointMouseUp,
+    startPointMouseEnter,
   ] = useStartPoint();
   const [
     endCoord,
     isMovingEndPoint,
     endPointMouseDown,
     endPointMouseUp,
+    endPointMouseEnter,
   ] = useEndPoint();
   const [startDijkstra] = useDijkstra(
     startCoord,
@@ -77,7 +79,6 @@ const Home = () => {
     if (!cell.isStartPoint && !cell.isEndPoint) {
       cell.isBlocked = true;
     }
-    setField([...field]);
   };
 
   const handleMouseUp = (
@@ -85,12 +86,11 @@ const Home = () => {
     cell: ICellProps
   ) => {
     if (isMovingStartPoint) {
-      startPointMouseUp(cell, e.currentTarget.id);
+      startPointMouseUp();
     }
     if (isMovingEndPoint) {
-      endPointMouseUp(cell, e.currentTarget.id);
+      endPointMouseUp();
     }
-    setField([...field]);
   };
 
   const handleMouseEnter = (
@@ -105,7 +105,12 @@ const Home = () => {
         !cell.isEndPoint
       ) {
         cell.isBlocked = true;
-        setField([...field]);
+      }
+      if (isMovingStartPoint) {
+        startPointMouseEnter(cell, e.currentTarget.id);
+      }
+      if (isMovingEndPoint) {
+        endPointMouseEnter(cell, e.currentTarget.id);
       }
     }
   };

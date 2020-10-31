@@ -6,6 +6,7 @@ export const useStartPoint = (): [
   number[],
   boolean,
   (cell: TCell) => void,
+  () => void,
   (cell: TCell, id: string) => void
 ] => {
   const [startCoord, setStartCoord] = useState(START);
@@ -18,12 +19,16 @@ export const useStartPoint = (): [
     setIsMovingStartPoint(true);
   };
 
-  const startPointMouseUp = (cell: TCell, id: string) => {
-    const coord = id.split("-").map((el) => +el);
+  const startPointMouseUp = () => {
     setIsMovingStartPoint(false);
+  };
+
+  const startPointMouseEnter = (cell: TCell, id: string) => {
+    const coord = id.split("-").map((el) => +el);
     if (!cell.isBlocked && !cell.isEndPoint && clickedStartPoint.current) {
       clickedStartPoint.current.isStartPoint = false;
       cell.isStartPoint = true;
+      clickedStartPoint.current = cell;
       setStartCoord(coord);
     }
   };
@@ -33,5 +38,6 @@ export const useStartPoint = (): [
     isMovingStartPoint,
     startPointMouseDown,
     startPointMouseUp,
+    startPointMouseEnter,
   ];
 };

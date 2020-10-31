@@ -6,6 +6,7 @@ export const useEndPoint = (): [
   number[],
   boolean,
   (cell: TCell) => void,
+  () => void,
   (cell: TCell, id: string) => void
 ] => {
   const [endCoord, setEndCoord] = useState(END);
@@ -18,15 +19,25 @@ export const useEndPoint = (): [
     setIsMovingEndPoint(true);
   };
 
-  const endPointMouseUp = (cell: TCell, id: string) => {
-    const coord = id.split("-").map((el) => +el);
+  const endPointMouseUp = () => {
     setIsMovingEndPoint(false);
+  };
+
+  const endPointMouseEnter = (cell: TCell, id: string) => {
+    const coord = id.split("-").map((el) => +el);
     if (!cell.isBlocked && !cell.isEndPoint && clickedEndPoint.current) {
       clickedEndPoint.current.isEndPoint = false;
       cell.isEndPoint = true;
+      clickedEndPoint.current = cell;
       setEndCoord(coord);
     }
   };
 
-  return [endCoord, isMovingEndPoint, endPointMouseDown, endPointMouseUp];
+  return [
+    endCoord,
+    isMovingEndPoint,
+    endPointMouseDown,
+    endPointMouseUp,
+    endPointMouseEnter,
+  ];
 };

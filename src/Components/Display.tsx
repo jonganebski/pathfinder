@@ -101,7 +101,6 @@ const Display: React.FC<IDisplayProps> = ({
             >
               {cell.isStartPoint && <Imoji>🐮</Imoji>}
               {cell.isEndPoint && <Imoji>💧</Imoji>}
-              {cell.isBlocked && <Imoji>🔥</Imoji>}
             </Cell>
           ))
         )}
