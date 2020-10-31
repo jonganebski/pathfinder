@@ -100,7 +100,8 @@ const Display: React.FC<IDisplayProps> = ({
               onMouseLeave={(e) => handleMouseLeave(e, cell)}
             >
               {cell.isStartPoint && <Imoji>🐮</Imoji>}
-              {cell.isEndPoint && <Imoji>🌳</Imoji>}
+              {cell.isEndPoint && <Imoji>💧</Imoji>}
+              {cell.isBlocked && <Imoji>🔥</Imoji>}
             </Cell>
           ))
         )}

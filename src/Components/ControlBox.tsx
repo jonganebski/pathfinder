@@ -7,13 +7,31 @@ const Wrapper = styled.div`
 `;
 
 interface IControlBoxProps {
+  isInitialized: boolean;
+  setIsInitialized: React.Dispatch<React.SetStateAction<boolean>>;
+  isRunning: boolean;
   startDijkstra: () => void;
 }
 
-const ControlBox: React.FC<IControlBoxProps> = ({ startDijkstra }) => {
+const ControlBox: React.FC<IControlBoxProps> = ({
+  isInitialized,
+  setIsInitialized,
+  isRunning,
+  startDijkstra,
+}) => {
   return (
     <Wrapper>
-      <button onClick={startDijkstra}>START</button>
+      <button
+        disabled={isRunning}
+        onClick={() => {
+          setIsInitialized(!isInitialized);
+          if (isInitialized) {
+            startDijkstra();
+          }
+        }}
+      >
+        {isInitialized ? "START" : isRunning ? "RUNNING" : "RESUME"}
+      </button>
     </Wrapper>
   );
 };

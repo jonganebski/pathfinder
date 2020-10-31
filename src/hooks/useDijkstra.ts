@@ -6,7 +6,8 @@ export const useDijkstra = (
   startCoord: number[],
   endCoord: number[],
   field: TCell[][],
-  setField: React.Dispatch<React.SetStateAction<ICellProps[][]>>
+  setField: React.Dispatch<React.SetStateAction<ICellProps[][]>>,
+  setIsRunning: React.Dispatch<React.SetStateAction<boolean>>
 ): [() => void] => {
   // ------------ SUB FUCTIONS ------------
 
@@ -54,6 +55,7 @@ export const useDijkstra = (
   // ------------ MAIN FUCTION ------------
 
   const startDijkstra = async () => {
+    setIsRunning(true);
     let borderCoords: number[][] = [[startCoord[0], startCoord[1]]];
     for (let i = 0; i < field.flat().length; i++) {
       console.log("for loop");
@@ -72,6 +74,7 @@ export const useDijkstra = (
           setField([...field]);
           if (uncheckedCell.isEndPoint) {
             trackDown(uncheckedCell);
+            setIsRunning(false);
             return;
           }
           checked.push(coord);

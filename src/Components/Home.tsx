@@ -1,8 +1,9 @@
-import React from "react";
+import React, { cloneElement } from "react";
 import styled from "styled-components";
 import { useDijkstra } from "../hooks/useDijkstra";
 import { useEndPoint } from "../hooks/useEndPoint";
 import { useField } from "../hooks/useField";
+import { useIsRunning } from "../hooks/useIsRunning";
 import { useStartPoint } from "../hooks/useStartPoint";
 import ControlBox from "./ControlBox";
 import Display from "./Display";
@@ -35,7 +36,8 @@ const Wrapper = styled.div`
 
 const Home = () => {
   // HOOKS
-  const [field, setField] = useField();
+  const [field, setField, isInitialized, setIsInitialized] = useField();
+  const [isRunning, setIsRunning] = useIsRunning();
   const [
     startCoord,
     isMovingStartPoint,
@@ -48,7 +50,13 @@ const Home = () => {
     endPointMouseDown,
     endPointMouseUp,
   ] = useEndPoint();
-  const [startDijkstra] = useDijkstra(startCoord, endCoord, field, setField);
+  const [startDijkstra] = useDijkstra(
+    startCoord,
+    endCoord,
+    field,
+    setField,
+    setIsRunning
+  );
 
   // console.log(field);
   // console.log("isMovingEndPoint: ", isMovingEndPoint);
@@ -67,6 +75,7 @@ const Home = () => {
       endPointMouseDown(cell);
     }
     if (!cell.isStartPoint && !cell.isEndPoint) {
+      cell.isBlocked = true;
     }
     setField([...field]);
   };
@@ -116,7 +125,12 @@ const Home = () => {
         handleMouseEnter={handleMouseEnter}
         handleMouseLeave={handleMouseLeave}
       />
-      <ControlBox startDijkstra={startDijkstra} />
+      <ControlBox
+        isInitialized={isInitialized}
+        setIsInitialized={setIsInitialized}
+        isRunning={isRunning}
+        startDijkstra={startDijkstra}
+      />
     </Wrapper>
   );
 };
