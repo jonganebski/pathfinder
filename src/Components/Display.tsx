@@ -52,10 +52,10 @@ const Cell = styled.div<ICellProps>`
   width: 100%;
   height: 100%;
   background-color: ${(props) =>
-    props.isChecked && props.isTrack
-      ? "yellow"
-      : props.isBlocked
+    props.isBlocked
       ? "black"
+      : props.isChecked && props.isTrack
+      ? "yellow"
       : props.isChecked
       ? "tomato"
       : "whitesmoke"};

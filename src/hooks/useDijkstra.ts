@@ -1,18 +1,30 @@
+import { useEffect, useState } from "react";
 import { ICellProps } from "../Components/Home";
 import { COLS, LOOP_DELAY, ROWS } from "../constants";
 import { TCell } from "./useField";
+import { TStatus } from "./useStatus";
 
 export const useDijkstra = (
   startCoord: number[],
   endCoord: number[],
   field: TCell[][],
   setField: React.Dispatch<React.SetStateAction<ICellProps[][]>>,
-  setIsRunning: React.Dispatch<React.SetStateAction<boolean>>
+  status: TStatus,
+  setStatus: React.Dispatch<React.SetStateAction<TStatus>>
 ): [() => void] => {
+  const [loopDelay, setLoopDelay] = useState<number>(0);
+
+  useEffect(() => {
+    if (status === "finished") {
+      setLoopDelay(0);
+    } else if (status === "initialized") {
+      setLoopDelay(LOOP_DELAY);
+    }
+  }, [status]);
+
   // ------------ SUB FUCTIONS ------------
 
-  const timer = (ms: number) =>
-    new Promise((resolve) => setTimeout(resolve, ms));
+  const timer = () => new Promise((resolve) => setTimeout(resolve, loopDelay));
 
   const isInside = (coord: number[]) => {
     const isInsideRows = 0 <= coord[0] && coord[0] < ROWS;
@@ -55,7 +67,9 @@ export const useDijkstra = (
   // ------------ MAIN FUCTION ------------
 
   const startDijkstra = async () => {
-    setIsRunning(true);
+    if (status !== "finished") {
+      setStatus("running");
+    }
     let borderCoords: number[][] = [[startCoord[0], startCoord[1]]];
     for (let i = 0; i < field.flat().length; i++) {
       console.log("for loop");
@@ -74,11 +88,13 @@ export const useDijkstra = (
           setField([...field]);
           if (uncheckedCell.isEndPoint) {
             trackDown(uncheckedCell);
-            setIsRunning(false);
+            setStatus("finished");
             return;
           }
           checked.push(coord);
-          await timer(LOOP_DELAY);
+          if (loopDelay !== 0) {
+            await timer();
+          }
         }
       }
       // Update border cells

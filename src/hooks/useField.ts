@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ICellProps } from "../Components/Home";
 import { ROWS, COLS, START, END } from "../constants";
+import { TStatus } from "./useStatus";
 
 export type TCell = ICellProps;
 
@@ -24,20 +25,16 @@ const getInitialField = () => {
   return initialField;
 };
 
-export const useField = (): [
-  TCell[][],
-  React.Dispatch<React.SetStateAction<ICellProps[][]>>,
-  boolean,
-  React.Dispatch<React.SetStateAction<boolean>>
-] => {
+export const useField = (
+  status: TStatus
+): [TCell[][], React.Dispatch<React.SetStateAction<ICellProps[][]>>] => {
   const [field, setField] = useState<ICellProps[][]>([]);
-  const [isInitialized, SetIsInitialized] = useState(true);
 
   useEffect(() => {
-    if (isInitialized) {
+    if (status === "initialized") {
       setField(getInitialField);
     }
-  }, [isInitialized]);
+  }, [status]);
 
-  return [field, setField, isInitialized, SetIsInitialized];
+  return [field, setField];
 };

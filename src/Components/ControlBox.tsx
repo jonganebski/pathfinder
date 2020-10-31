@@ -1,37 +1,53 @@
 import React from "react";
 import styled from "styled-components";
+import { TStatus } from "../hooks/useStatus";
 
 const Wrapper = styled.div`
   grid-area: control;
   background-color: steelblue;
 `;
 
+const Button = styled.button`
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 7rem;
+  height: 2rem;
+  background-color: red;
+  letter-spacing: 2px;
+`;
+
 interface IControlBoxProps {
-  isInitialized: boolean;
-  setIsInitialized: React.Dispatch<React.SetStateAction<boolean>>;
-  isRunning: boolean;
+  status: TStatus;
+  setStatus: React.Dispatch<React.SetStateAction<TStatus>>;
   startDijkstra: () => void;
 }
 
 const ControlBox: React.FC<IControlBoxProps> = ({
-  isInitialized,
-  setIsInitialized,
-  isRunning,
+  status,
+  setStatus,
   startDijkstra,
 }) => {
   return (
     <Wrapper>
-      <button
-        disabled={isRunning}
+      <Button
+        disabled={status === "running"}
         onClick={() => {
-          setIsInitialized(!isInitialized);
-          if (isInitialized) {
+          console.log("click");
+          if (status === "initialized") {
             startDijkstra();
+          } else if (status === "finished") {
+            setStatus("initialized");
           }
         }}
       >
-        {isInitialized ? "START" : isRunning ? "RUNNING" : "RESUME"}
-      </button>
+        {status === "initialized"
+          ? "START"
+          : status === "running"
+          ? "RUNNING"
+          : "RESUME"}
+      </Button>
     </Wrapper>
   );
 };

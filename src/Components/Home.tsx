@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useDijkstra } from "../hooks/useDijkstra";
 import { useEndPoint } from "../hooks/useEndPoint";
 import { useField } from "../hooks/useField";
-import { useIsRunning } from "../hooks/useIsRunning";
+import { useStatus } from "../hooks/useStatus";
 import { useStartPoint } from "../hooks/useStartPoint";
 import ControlBox from "./ControlBox";
 import Display from "./Display";
@@ -36,8 +36,8 @@ const Wrapper = styled.div`
 
 const Home = () => {
   // HOOKS
-  const [field, setField, isInitialized, setIsInitialized] = useField();
-  const [isRunning, setIsRunning] = useIsRunning();
+  const [status, setStatus] = useStatus();
+  const [field, setField] = useField(status);
   const [
     startCoord,
     isMovingStartPoint,
@@ -51,13 +51,14 @@ const Home = () => {
     endPointMouseDown,
     endPointMouseUp,
     endPointMouseEnter,
-  ] = useEndPoint();
+  ] = useEndPoint(field);
   const [startDijkstra] = useDijkstra(
     startCoord,
     endCoord,
     field,
     setField,
-    setIsRunning
+    status,
+    setStatus
   );
 
   // console.log(field);
@@ -79,6 +80,7 @@ const Home = () => {
     if (!cell.isStartPoint && !cell.isEndPoint) {
       cell.isBlocked = true;
     }
+    setField([...field]);
   };
 
   const handleMouseUp = (
@@ -91,6 +93,7 @@ const Home = () => {
     if (isMovingEndPoint) {
       endPointMouseUp();
     }
+    setField([...field]);
   };
 
   const handleMouseEnter = (
@@ -110,8 +113,9 @@ const Home = () => {
         startPointMouseEnter(cell, e.currentTarget.id);
       }
       if (isMovingEndPoint) {
-        endPointMouseEnter(cell, e.currentTarget.id);
+        endPointMouseEnter(cell, e.currentTarget.id, status, startDijkstra);
       }
+      setField([...field]);
     }
   };
 
@@ -131,9 +135,8 @@ const Home = () => {
         handleMouseLeave={handleMouseLeave}
       />
       <ControlBox
-        isInitialized={isInitialized}
-        setIsInitialized={setIsInitialized}
-        isRunning={isRunning}
+        status={status}
+        setStatus={setStatus}
         startDijkstra={startDijkstra}
       />
     </Wrapper>
