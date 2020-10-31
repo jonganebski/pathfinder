@@ -1,10 +1,12 @@
 import React from "react";
 import styled from "styled-components";
-import { COLS, ROWS } from "../constants";
 import { useDijkstra } from "../hooks/useDijkstra";
 import { useEndPoint } from "../hooks/useEndPoint";
 import { useField } from "../hooks/useField";
 import { useStartPoint } from "../hooks/useStartPoint";
+import ControlBox from "./ControlBox";
+import Display from "./Display";
+import Header from "./Header";
 
 // ----------- INTERFACE -----------
 
@@ -19,39 +21,14 @@ export interface ICellProps {
 
 // ----------- STYLED COMPONENTS -----------
 
-const Grid = styled.div`
-  width: 50vw;
-  height: calc(50vw * (${ROWS / COLS}));
+const Wrapper = styled.div`
+  height: 100vh;
   display: grid;
-  grid-template-columns: repeat(${COLS}, auto);
-  grid-template-rows: repeat(${ROWS}, auto);
-  grid-gap: 1px;
-  background-color: steelblue;
-  border: 1px solid steelblue;
-`;
-
-const Cell = styled.div<ICellProps>`
-  position: relative;
-  width: 100%;
-  height: 100%;
-  background-color: ${(props) =>
-    props.isChecked && props.isTrack
-      ? "yellow"
-      : props.isBlocked
-      ? "black"
-      : props.isChecked
-      ? "tomato"
-      : "whitesmoke"};
-  transition: ${(props) =>
-    props.isChecked ? "background 1s ease-in-out" : "none"};
-`;
-
-const Imoji = styled.span`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
+  grid-template-areas:
+    "header header"
+    "display control";
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr 10fr;
 `;
 
 // ----------- MAIN COMPONENT -----------
@@ -130,32 +107,17 @@ const Home = () => {
   ) => {};
 
   return (
-    <>
-      <button onClick={startDijkstra}>START</button>
-      <Grid>
-        {field.map((row, rowIdx) =>
-          row.map((cell, cellIdx) => (
-            <Cell
-              key={`${rowIdx}-${cellIdx}`}
-              id={`${rowIdx}-${cellIdx}`}
-              isChecked={cell.isChecked}
-              isBlocked={cell.isBlocked}
-              isStartPoint={cell.isStartPoint}
-              isEndPoint={cell.isEndPoint}
-              isTrack={cell.isTrack}
-              before={cell.before}
-              onMouseDown={(e) => handleMouseDown(e, cell)}
-              onMouseUp={(e) => handleMouseUp(e, cell)}
-              onMouseEnter={(e) => handleMouseEnter(e, cell)}
-              onMouseLeave={(e) => handleMouseLeave(e, cell)}
-            >
-              {cell.isStartPoint && <Imoji>🐮</Imoji>}
-              {cell.isEndPoint && <Imoji>🌳</Imoji>}
-            </Cell>
-          ))
-        )}
-      </Grid>
-    </>
+    <Wrapper>
+      <Header />
+      <Display
+        field={field}
+        handleMouseDown={handleMouseDown}
+        handleMouseUp={handleMouseUp}
+        handleMouseEnter={handleMouseEnter}
+        handleMouseLeave={handleMouseLeave}
+      />
+      <ControlBox startDijkstra={startDijkstra} />
+    </Wrapper>
   );
 };
 
