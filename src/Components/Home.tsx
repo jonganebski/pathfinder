@@ -1,10 +1,12 @@
-import React, { cloneElement, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { COLS, ROWS } from "../constants";
 import { useDijkstra } from "../hooks/useDijkstra";
 import { useEndPoint } from "../hooks/useEndPoint";
 import { useField } from "../hooks/useField";
 import { useStartPoint } from "../hooks/useStartPoint";
+
+// ----------- INTERFACE -----------
 
 export interface ICellProps {
   isChecked: boolean;
@@ -14,6 +16,8 @@ export interface ICellProps {
   isTrack: boolean;
   before: number[];
 }
+
+// ----------- STYLED COMPONENTS -----------
 
 const Grid = styled.div`
   width: 50vw;
@@ -50,7 +54,10 @@ const Imoji = styled.span`
   cursor: pointer;
 `;
 
+// ----------- MAIN COMPONENT -----------
+
 const Home = () => {
+  // HOOKS
   const [field, setField] = useField();
   const [
     startCoord,
@@ -70,6 +77,7 @@ const Home = () => {
   // console.log("isMovingEndPoint: ", isMovingEndPoint);
   // console.log("isMovingStartPoint: ", isMovingStartPoint);
 
+  // FUNCTIONS
   const handleMouseDown = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
     cell: ICellProps
