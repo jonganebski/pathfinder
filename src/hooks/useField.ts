@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { ICellProps } from "../Components/Home";
+import { NodeProps } from "../Components/Node";
 import { ROWS, COLS, START, END } from "../constants";
 import { TStatus } from "./useStatus";
 
-export type TCell = ICellProps;
-
 const getInitialField = () => {
-  const cellObj = {
+  const cellObj: NodeProps = {
+    distance: Infinity,
     isChecked: false,
     isBlocked: false,
     isStartPoint: false,
@@ -16,7 +15,7 @@ const getInitialField = () => {
   };
   const baseArr: number[][] = Array(ROWS).fill(Array(COLS).fill(0));
 
-  const initialField: TCell[][] = baseArr.map((row) =>
+  const initialField: NodeProps[][] = baseArr.map((row) =>
     row.map(() => ({ ...cellObj }))
   );
   initialField[START[0]][START[1]].isStartPoint = true;
@@ -27,8 +26,8 @@ const getInitialField = () => {
 
 export const useField = (
   status: TStatus
-): [TCell[][], React.Dispatch<React.SetStateAction<ICellProps[][]>>] => {
-  const [field, setField] = useState<ICellProps[][]>([]);
+): [NodeProps[][], React.Dispatch<React.SetStateAction<NodeProps[][]>>] => {
+  const [field, setField] = useState<NodeProps[][]>([]);
 
   useEffect(() => {
     if (status === "initialized") {

@@ -1,25 +1,29 @@
 import { useRef, useState } from "react";
-import { ICellProps } from "../Components/Home";
+import { NodeProps } from "../Components/Node";
 import { END } from "../constants";
-import { TCell } from "./useField";
 import { TStatus } from "./useStatus";
 
 export const useEndPoint = (
-  field: ICellProps[][]
+  field: NodeProps[][]
 ): [
   number[],
   boolean,
-  (cell: TCell) => void,
+  (node: NodeProps) => void,
   () => void,
-  (cell: TCell, id: string, status: TStatus, startDijkstra: () => void) => void
+  (
+    node: NodeProps,
+    id: string,
+    status: TStatus,
+    startDijkstra: () => void
+  ) => void
 ] => {
   const [endCoord, setEndCoord] = useState(END);
   const [isMovingEndPoint, setIsMovingEndPoint] = useState(false);
 
-  const clickedEndPoint = useRef<TCell | null>(null);
+  const clickedEndPoint = useRef<NodeProps | null>(null);
 
-  const endPointMouseDown = (cell: TCell) => {
-    clickedEndPoint.current = cell;
+  const endPointMouseDown = (node: NodeProps) => {
+    clickedEndPoint.current = node;
     setIsMovingEndPoint(true);
   };
 
@@ -28,24 +32,24 @@ export const useEndPoint = (
   };
 
   const endPointMouseEnter = (
-    cell: TCell,
+    node: NodeProps,
     id: string,
     status: TStatus,
     startDijkstra: () => void
   ) => {
     const coord = id.split("-").map((el) => +el);
-    if (!cell.isBlocked && !cell.isEndPoint && clickedEndPoint.current) {
+    if (!node.isBlocked && !node.isEndPoint && clickedEndPoint.current) {
       clickedEndPoint.current.isEndPoint = false;
-      cell.isEndPoint = true;
-      clickedEndPoint.current = cell;
+      node.isEndPoint = true;
+      clickedEndPoint.current = node;
       setEndCoord(coord);
     }
     if (status === "finished") {
       field.forEach((row) =>
-        row.forEach((cell) => {
-          cell.isChecked = false;
-          cell.isTrack = false;
-          cell.before = [];
+        row.forEach((node) => {
+          node.isChecked = false;
+          node.isTrack = false;
+          node.before = [];
         })
       );
       startDijkstra();

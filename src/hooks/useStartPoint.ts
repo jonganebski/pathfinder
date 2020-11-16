@@ -1,21 +1,21 @@
 import { useRef, useState } from "react";
+import { NodeProps } from "../Components/Node";
 import { START } from "../constants";
-import { TCell } from "./useField";
 
 export const useStartPoint = (): [
   number[],
   boolean,
-  (cell: TCell) => void,
+  (node: NodeProps) => void,
   () => void,
-  (cell: TCell, id: string) => void
+  (node: NodeProps, id: string) => void
 ] => {
   const [startCoord, setStartCoord] = useState(START);
   const [isMovingStartPoint, setIsMovingStartPoint] = useState(false);
 
-  const clickedStartPoint = useRef<TCell>();
+  const clickedStartPoint = useRef<NodeProps>();
 
-  const startPointMouseDown = (cell: TCell) => {
-    clickedStartPoint.current = cell;
+  const startPointMouseDown = (node: NodeProps) => {
+    clickedStartPoint.current = node;
     setIsMovingStartPoint(true);
   };
 
@@ -23,12 +23,12 @@ export const useStartPoint = (): [
     setIsMovingStartPoint(false);
   };
 
-  const startPointMouseEnter = (cell: TCell, id: string) => {
+  const startPointMouseEnter = (node: NodeProps, id: string) => {
     const coord = id.split("-").map((el) => +el);
-    if (!cell.isBlocked && !cell.isEndPoint && clickedStartPoint.current) {
+    if (!node.isBlocked && !node.isEndPoint && clickedStartPoint.current) {
       clickedStartPoint.current.isStartPoint = false;
-      cell.isStartPoint = true;
-      clickedStartPoint.current = cell;
+      node.isStartPoint = true;
+      clickedStartPoint.current = node;
       setStartCoord(coord);
     }
   };

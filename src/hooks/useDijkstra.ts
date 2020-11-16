@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
-import { ICellProps } from "../Components/Home";
+import { NodeProps } from "../Components/Node";
 import { COLS, LOOP_DELAY, ROWS } from "../constants";
-import { TCell } from "./useField";
 import { TStatus } from "./useStatus";
 
 export const useDijkstra = (
   startCoord: number[],
   endCoord: number[],
-  field: TCell[][],
-  setField: React.Dispatch<React.SetStateAction<ICellProps[][]>>,
+  field: NodeProps[][],
+  setField: React.Dispatch<React.SetStateAction<NodeProps[][]>>,
   status: TStatus,
   setStatus: React.Dispatch<React.SetStateAction<TStatus>>
 ): [() => void] => {
@@ -40,19 +39,19 @@ export const useDijkstra = (
     aroundCoords.push([coord[0], coord[1] - 1]);
     return aroundCoords.filter((coord) => {
       if (isInside(coord)) {
-        const cell = field[coord[0]][coord[1]];
-        return cell.isChecked === false;
+        const node = field[coord[0]][coord[1]];
+        return node.isChecked === false;
       } else {
         return false;
       }
     });
   };
 
-  const trackDown = (cell: TCell) => {
-    // This back tracking function
+  const trackDown = (node: NodeProps) => {
+    // This is back tracking function
     for (let i = 0; i < field.flat().length; i++) {
-      const cellBefore = field[cell.before[0]][cell.before[1]];
-      cell.isTrack = true;
+      const cellBefore = field[node.before[0]][node.before[1]];
+      node.isTrack = true;
       setField([...field]);
       if (cellBefore.isStartPoint) {
         return true;
@@ -79,7 +78,7 @@ export const useDijkstra = (
         const borderCoord = borderCoords[j];
         const uncheckedCoords = getUncheckedCells(borderCoord);
         for (let k = 0; k < uncheckedCoords.length; k++) {
-          // Loop for unchecked cells around each border cell.
+          // Loop for unchecked cells around each border node.
           const coord = uncheckedCoords[k];
           const uncheckedCell = field[coord[0]][coord[1]];
           if (uncheckedCell.isBlocked) continue;
