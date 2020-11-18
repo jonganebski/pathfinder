@@ -1,24 +1,35 @@
 import React from "react";
 import styled from "styled-components";
 import { NodeService, useNode } from "../hooks/useNode";
+import { Status } from "../hooks/useStatus";
 
 interface DivProps {
   isBlocked: boolean;
   isVisited: boolean;
   isStart: boolean;
   isEnd: boolean;
+  isPath: boolean;
 }
 
 const Div = styled.div<DivProps>`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${({ isBlocked, isVisited }) =>
-    isBlocked ? "black" : isVisited ? "tomato" : "whitesmoke"};
+  background-color: ${({ isBlocked, isVisited, isPath }) =>
+    isBlocked
+      ? "black"
+      : isPath
+      ? "yellow"
+      : isVisited
+      ? "tomato"
+      : "whitesmoke"};
   cursor: ${({ isStart, isEnd }) => (isStart || isEnd) && "pointer"};
+  transition: ${({ isVisited }) =>
+    isVisited && "background-color 0.3s ease-in-out"};
 `;
 
 interface NodeProps {
+  grid: NodeService[][];
   NodeService: NodeService;
   movingStartPoint: boolean;
   setMovingStartPoint: React.Dispatch<React.SetStateAction<boolean>>;
@@ -27,9 +38,12 @@ interface NodeProps {
   setGrid: React.Dispatch<React.SetStateAction<NodeService[][]>>;
   lastStartNode: React.MutableRefObject<NodeService | undefined>;
   lastEndNode: React.MutableRefObject<NodeService | undefined>;
+  status: Status;
+  startDijkstra: () => Promise<void>;
 }
 
 const Node: React.FC<NodeProps> = ({
+  grid,
   NodeService,
   setGrid,
   movingStartPoint,
@@ -38,9 +52,12 @@ const Node: React.FC<NodeProps> = ({
   setMovingEndPoint,
   lastStartNode,
   lastEndNode,
+  status,
+  startDijkstra,
 }) => {
-  const { isBlocked, isVisited, isStart, isEnd } = NodeService;
+  const { isBlocked, isVisited, isStart, isEnd, isPath } = NodeService;
   const mouseEventHandlers = useNode(
+    grid,
     NodeService,
     movingStartPoint,
     setMovingStartPoint,
@@ -48,7 +65,9 @@ const Node: React.FC<NodeProps> = ({
     setMovingEndPoint,
     setGrid,
     lastStartNode,
-    lastEndNode
+    lastEndNode,
+    status,
+    startDijkstra
   );
   return (
     <Div
@@ -56,6 +75,7 @@ const Node: React.FC<NodeProps> = ({
       isVisited={isVisited}
       isStart={isStart}
       isEnd={isEnd}
+      isPath={isPath}
       {...mouseEventHandlers}
     >
       {NodeService.getValue()}

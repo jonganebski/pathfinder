@@ -1,13 +1,11 @@
-import { stat } from "fs";
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import Header from "../Components/Header";
 import Node from "../Components/Node";
 import { COLS, ROWS } from "../constants";
 import { useDijkstra } from "../hooks/useDijkstra";
 import { useGrid } from "../hooks/useGrid";
-import { useNode } from "../hooks/useNode";
-import { Status, useStatus } from "../hooks/useStatus";
+import { useStatus } from "../hooks/useStatus";
 
 // ----------- STYLED COMPONENTS -----------
 
@@ -47,7 +45,6 @@ const Dijkstra: React.FC<DijkstraProps> = ({}) => {
   } = useGrid();
   const { status, setStatus, onClick } = useStatus(generateGrid);
   const { startDijkstra } = useDijkstra(grid, setGrid, status, setStatus);
-
   return (
     <>
       <Header
@@ -68,6 +65,7 @@ const Dijkstra: React.FC<DijkstraProps> = ({}) => {
             row.map((NodeService, colIdx) => (
               <Node
                 key={colIdx}
+                grid={grid}
                 NodeService={NodeService}
                 setGrid={setGrid}
                 movingStartPoint={movingStartPoint}
@@ -76,6 +74,8 @@ const Dijkstra: React.FC<DijkstraProps> = ({}) => {
                 setMovingEndPoint={setMovingEndPoint}
                 lastStartNode={lastStartNode}
                 lastEndNode={lastEndNode}
+                status={status}
+                startDijkstra={startDijkstra}
               />
             ))
           )}

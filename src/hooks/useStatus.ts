@@ -1,20 +1,22 @@
-import { useState } from "react";
-import { NodeService } from "./useNode";
+import { useEffect, useState } from "react";
 
 export type Status = "initialized" | "running" | "finished";
 
 export const useStatus = (generateGrid: () => void) => {
   const [status, setStatus] = useState<Status>("initialized");
 
+  useEffect(() => {
+    setStatus("initialized");
+  }, []);
+
   const onClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    algorithmFn: () => Promise<NodeService[] | undefined>
+    algorithmFn: () => Promise<void>
   ) => {
     e.preventDefault();
     setStatus((prev) => {
       if (prev === "initialized") {
-        algorithmFn().then((c) => console.log(c));
-
+        algorithmFn();
         return "running";
       } else if (prev === "finished") {
         generateGrid();

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useEffect, useState } from "react";
 import { LOOP_DELAY } from "../constants";
 import { NodeService } from "./useNode";
 import { Status } from "./useStatus";
@@ -11,12 +11,38 @@ export const useDijkstra = (
 ) => {
   const [loopDelay, setLoopDelay] = useState(LOOP_DELAY);
 
-  const timer = () => new Promise((resolve) => setTimeout(resolve, LOOP_DELAY));
+  useEffect(() => {
+    if (status === "finished") {
+      setLoopDelay(0);
+    }
+    if (status === "initialized") {
+      setLoopDelay(LOOP_DELAY);
+    }
+  }, [status]);
+
+  const timer = () => new Promise((resolve) => setTimeout(resolve, loopDelay));
 
   const sortByDistance = (flatGrid: NodeService[]) =>
     flatGrid.sort((a, b) => a.distance - b.distance);
 
-  const startDijkstra = useCallback(async () => {
+  const getShortestPath = async (endNode: NodeService) => {
+    const pathNodes: NodeService[] = [];
+    let currentNode = endNode;
+    while (currentNode.previousNode !== null) {
+      pathNodes.unshift(currentNode);
+      currentNode = currentNode.previousNode;
+    }
+    for (let i = 0; i < pathNodes.length; i++) {
+      pathNodes[i].isPath = true;
+      setGrid([...grid]);
+      if (loopDelay !== 0) {
+        await timer();
+      }
+    }
+    return;
+  };
+
+  const startDijkstra = async () => {
     const visitedNodes: NodeService[] = [];
     const unvisitedNodes = grid.flat();
     const startNode = unvisitedNodes.find((node) => node.isStart);
@@ -36,14 +62,15 @@ export const useDijkstra = (
         continue;
       }
       if (closestNode.distance === Infinity) {
-        return visitedNodes;
+        setStatus("finished");
+        return;
       }
       closestNode.isVisited = true;
       visitedNodes.push(closestNode);
       if (closestNode.isEnd) {
+        await getShortestPath(closestNode);
         setStatus("finished");
-        console.log(visitedNodes);
-        return visitedNodes;
+        return;
       }
       closestNode.updateDistanceOfUnvisitedNeighbors(grid, closestNode);
       setGrid([...grid]);
@@ -51,7 +78,7 @@ export const useDijkstra = (
         await timer();
       }
     }
-  }, [grid, loopDelay, setGrid, setStatus]);
+  };
 
   return { startDijkstra };
 };

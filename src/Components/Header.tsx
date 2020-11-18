@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import { NodeService } from "../hooks/useNode";
 import { Status } from "../hooks/useStatus";
 
 const Wrapper = styled.header`
@@ -23,9 +22,9 @@ interface HeaderProps {
   setStatus: React.Dispatch<React.SetStateAction<Status>>;
   onClick: (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    algorithmFn: () => Promise<NodeService[] | undefined>
+    algorithmFn: () => Promise<void>
   ) => void;
-  algorithmFn: () => Promise<NodeService[] | undefined>;
+  algorithmFn: () => Promise<void>;
 }
 
 const Header: React.FC<HeaderProps> = ({
