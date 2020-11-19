@@ -2,7 +2,7 @@ import { NodeService } from "./useNode";
 import { Status } from "./useStatus";
 import { useTimer } from "./useTimer";
 
-export const useDijkstra = (
+export const useAStar = (
   grid: NodeService[][],
   setGrid: React.Dispatch<React.SetStateAction<NodeService[][]>>,
   status: Status,
@@ -11,7 +11,14 @@ export const useDijkstra = (
   const { timer } = useTimer(status);
 
   const sortByDistance = (flatGrid: NodeService[]) =>
-    flatGrid.sort((a, b) => a.distance - b.distance);
+    flatGrid.sort((a, b) => {
+      let compare;
+      compare = a.heuristicDistance - b.heuristicDistance;
+      if (compare === 0) {
+        compare = a.distance - b.distance;
+      }
+      return compare;
+    });
 
   const getShortestPath = async (endNode: NodeService) => {
     const pathNodes: NodeService[] = [];
@@ -30,15 +37,35 @@ export const useDijkstra = (
     return;
   };
 
-  const runDijkstra = async () => {
+  const getManhattanDistance = (NodeA: NodeService, NodeB: NodeService) => {
+    const row = Math.abs(NodeA.rowIdx - NodeB.rowIdx);
+    const col = Math.abs(NodeA.colIdx - NodeB.colIdx);
+
+    return Math.sqrt(Math.pow(row, 2) + Math.pow(col, 2));
+  };
+  //   const getManhattanDistance = (NodeA: NodeService, NodeB: NodeService) => {
+  //     const distance =
+  //       Math.abs(NodeA.rowIdx - NodeB.rowIdx) +
+  //       Math.abs(NodeA.colIdx - NodeB.colIdx);
+
+  //     return distance;
+  //   };
+
+  const runAStar = async () => {
     const visitedNodes: NodeService[] = [];
     const unvisitedNodes = grid.flat();
     const startNode = unvisitedNodes.find((node) => node.isStart);
+    const endNode = unvisitedNodes.find((node) => node.isEnd);
     if (!startNode) {
       console.error("Cannot find starting point");
       return;
     }
-    startNode!.distance = 0;
+    if (!endNode) {
+      console.error("Caanot find end point");
+      return;
+    }
+    startNode.distance = 0;
+    startNode.heuristicDistance = 0;
     while (unvisitedNodes.length !== 0) {
       sortByDistance(unvisitedNodes);
       const closestNode = unvisitedNodes.shift();
@@ -62,7 +89,9 @@ export const useDijkstra = (
       }
       const unvisitedNeighbors = closestNode.getUnvisitedNeighbors(grid);
       unvisitedNeighbors.forEach((node) => {
-        node.distance = closestNode.distance + 1;
+        const heuristic = getManhattanDistance(node, endNode);
+        node.distance = closestNode.distance + 1 + heuristic;
+        node.heuristicDistance = heuristic;
         node.previousNode = closestNode;
       });
       setGrid([...grid]);
@@ -72,5 +101,5 @@ export const useDijkstra = (
     }
   };
 
-  return { runDijkstra };
+  return { runAStar };
 };

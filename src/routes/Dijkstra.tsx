@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Header from "../Components/Header";
 import Node from "../Components/Node";
 import { COLS, ROWS } from "../constants";
+import { useAStar } from "../hooks/useAStar";
 import { useDijkstra } from "../hooks/useDijkstra";
 import { useGrid } from "../hooks/useGrid";
 import { useStatus } from "../hooks/useStatus";
@@ -31,7 +32,7 @@ const Grid = styled.div`
 
 interface DijkstraProps {}
 
-const Dijkstra: React.FC<DijkstraProps> = ({}) => {
+const Dijkstra: React.FC<DijkstraProps> = () => {
   const {
     grid,
     setGrid,
@@ -44,14 +45,16 @@ const Dijkstra: React.FC<DijkstraProps> = ({}) => {
     lastEndNode,
   } = useGrid();
   const { status, setStatus, onClick } = useStatus(generateGrid);
-  const { startDijkstra } = useDijkstra(grid, setGrid, status, setStatus);
+  const { runDijkstra } = useDijkstra(grid, setGrid, status, setStatus);
+  const { runAStar } = useAStar(grid, setGrid, status, setStatus);
   return (
     <>
       <Header
         status={status}
         setStatus={setStatus}
         onClick={onClick}
-        algorithmFn={startDijkstra}
+        // algorithmFn={runDijkstra}
+        algorithmFn={runAStar}
       />
       <Main>
         <Grid
@@ -75,7 +78,8 @@ const Dijkstra: React.FC<DijkstraProps> = ({}) => {
                 lastStartNode={lastStartNode}
                 lastEndNode={lastEndNode}
                 status={status}
-                startDijkstra={startDijkstra}
+                // runDijkstra={runDijkstra}
+                runDijkstra={runAStar}
               />
             ))
           )}

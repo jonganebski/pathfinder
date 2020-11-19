@@ -39,7 +39,7 @@ interface NodeProps {
   lastStartNode: React.MutableRefObject<NodeService | undefined>;
   lastEndNode: React.MutableRefObject<NodeService | undefined>;
   status: Status;
-  startDijkstra: () => Promise<void>;
+  runDijkstra: () => Promise<void>;
 }
 
 const Node: React.FC<NodeProps> = ({
@@ -53,7 +53,7 @@ const Node: React.FC<NodeProps> = ({
   lastStartNode,
   lastEndNode,
   status,
-  startDijkstra,
+  runDijkstra,
 }) => {
   const { isBlocked, isVisited, isStart, isEnd, isPath } = NodeService;
   const mouseEventHandlers = useNode(
@@ -67,7 +67,7 @@ const Node: React.FC<NodeProps> = ({
     lastStartNode,
     lastEndNode,
     status,
-    startDijkstra
+    runDijkstra
   );
   return (
     <Div

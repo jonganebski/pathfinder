@@ -14,6 +14,7 @@ export class NodeService {
   isBlocked = false;
   isVisited = false;
   distance = Infinity;
+  heuristicDistance = Infinity;
   previousNode: NodeService | null = null;
   isPath = false;
 
@@ -27,7 +28,7 @@ export class NodeService {
     return null;
   }
 
-  private getUnvisitedNeighbors(grid: NodeService[][]) {
+  getUnvisitedNeighbors(grid: NodeService[][]) {
     const neighbors = [];
     if (0 < this.rowIdx) {
       const neighbor = grid[this.rowIdx - 1][this.colIdx];
@@ -49,17 +50,6 @@ export class NodeService {
       (node) => !node.isBlocked && !node.isVisited
     );
     return unvisitedNeighbors;
-  }
-
-  updateDistanceOfUnvisitedNeighbors(
-    grid: NodeService[][],
-    previousNode: NodeService
-  ) {
-    const unvisitedNeighbors = this.getUnvisitedNeighbors(grid);
-    unvisitedNeighbors.forEach((node) => {
-      node.distance = previousNode.distance + 1;
-      node.previousNode = previousNode;
-    });
   }
 }
 
@@ -132,6 +122,7 @@ export const useNode = (
             node.isVisited = false;
             node.previousNode = null;
             node.distance = Infinity;
+            node.heuristicDistance = Infinity;
           })
         );
         startDijkstra();
