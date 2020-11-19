@@ -60,9 +60,9 @@ export class NodeService {
     return;
   }
 
-  getNeighbors(grid: NodeService[][], distance: number) {
+  getNeighbors(grid: NodeService[][], distance: number): NodeService[] {
     const neighbors = [];
-    if (0 < this.rowIdx) {
+    if (distance - 1 < this.rowIdx) {
       const neighbor = grid[this.rowIdx - distance][this.colIdx];
       neighbors.push(neighbor);
     }
@@ -70,7 +70,7 @@ export class NodeService {
       const neighbor = grid[this.rowIdx + distance][this.colIdx];
       neighbors.push(neighbor);
     }
-    if (0 < this.colIdx) {
+    if (distance - 1 < this.colIdx) {
       const neighbor = grid[this.rowIdx][this.colIdx - distance];
       neighbors.push(neighbor);
     }

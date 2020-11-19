@@ -30,14 +30,28 @@ export const useMaze = (
     if (grid.length !== 0) {
       grid.forEach((row) => row.forEach((node) => (node.isBlocked = true)));
       setGrid([...grid]);
-      let currentNode = grid[10][10];
+      let currentNode = grid.flat().find((node) => node.isStart);
+      if (!currentNode) {
+        console.error("There is no starting point on the grid");
+        return;
+      }
       currentNode.isBlocked = false;
       let passedNodes: NodeService[] = [currentNode];
       while (passedNodes.length !== 0) {
-        const remoteNeighbors = currentNode.getNeighbors(grid, 2);
-        const blockedRemoteNeighbors = remoteNeighbors.filter(
-          (node) => node.isBlocked
+        if (!currentNode) {
+          console.error("There is no starting point on the grid");
+          return;
+        }
+        const remoteNeighbors: NodeService[] = currentNode.getNeighbors(
+          grid,
+          2
         );
+        const blockedRemoteNeighbors = remoteNeighbors.filter((node) => {
+          if (!node) {
+            return true;
+          }
+          return node.isBlocked;
+        });
         const len = blockedRemoteNeighbors.length;
         if (len === 0) {
           if (passedNodes.length !== 0) {
@@ -51,7 +65,9 @@ export const useMaze = (
         }
         let randIdx: number;
         randIdx = Math.floor(Math.random() * len);
+        console.log(randIdx);
         const remoteNeighbor = blockedRemoteNeighbors[randIdx];
+        console.log(blockedRemoteNeighbors);
         remoteNeighbor.isBlocked = false;
         currentNode.unblockNodeBetween(grid, remoteNeighbor);
         currentNode = remoteNeighbor;
