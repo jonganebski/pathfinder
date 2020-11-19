@@ -32,14 +32,22 @@ export const useMaze = (
       setGrid([...grid]);
       let currentNode = grid[10][10];
       currentNode.isBlocked = false;
-      for (let i = 0; i < 300; i++) {
+      let passedNodes: NodeService[] = [currentNode];
+      while (passedNodes.length !== 0) {
         const remoteNeighbors = currentNode.getNeighbors(grid, 2);
         const blockedRemoteNeighbors = remoteNeighbors.filter(
           (node) => node.isBlocked
         );
         const len = blockedRemoteNeighbors.length;
         if (len === 0) {
-          break;
+          if (passedNodes.length !== 0) {
+            const prevNode = passedNodes[passedNodes.length - 1];
+            passedNodes.pop();
+            currentNode = prevNode!;
+            continue;
+          } else {
+            break;
+          }
         }
         let randIdx: number;
         randIdx = Math.floor(Math.random() * len);
@@ -47,10 +55,12 @@ export const useMaze = (
         remoteNeighbor.isBlocked = false;
         currentNode.unblockNodeBetween(grid, remoteNeighbor);
         currentNode = remoteNeighbor;
+        passedNodes.push(currentNode);
         setGrid([...grid]);
         await timer();
       }
     }
+    console.log("done!");
   };
 
   return { generateMaze };
