@@ -28,24 +28,61 @@ export class NodeService {
     return null;
   }
 
-  getUnvisitedNeighbors(grid: NodeService[][]) {
+  unblockNodeBetween(grid: NodeService[][], targetNode: NodeService) {
+    const rowDistance = Math.abs(this.rowIdx - targetNode.rowIdx);
+    const colDistance = Math.abs(this.colIdx - targetNode.colIdx);
+    if (rowDistance !== 2 && colDistance !== 2) {
+      console.error("You are sending wrong pairs");
+      return;
+    }
+    let nodeBetween: NodeService;
+    let targetNodeColIdx;
+    let targetNodeRowIdx;
+    if (this.rowIdx === targetNode.rowIdx) {
+      if (this.colIdx < targetNode.colIdx) {
+        targetNodeColIdx = this.colIdx + 1;
+      } else {
+        targetNodeColIdx = this.colIdx - 1;
+      }
+      nodeBetween = grid[this.rowIdx][targetNodeColIdx];
+    } else if (this.colIdx === targetNode.colIdx) {
+      if (this.rowIdx < targetNode.rowIdx) {
+        targetNodeRowIdx = this.rowIdx + 1;
+      } else {
+        targetNodeRowIdx = this.rowIdx - 1;
+      }
+      nodeBetween = grid[targetNodeRowIdx][this.colIdx];
+    } else {
+      console.error("You are sending wrong pairs");
+      return;
+    }
+    nodeBetween.isBlocked = false;
+    return;
+  }
+
+  getNeighbors(grid: NodeService[][], distance: number) {
     const neighbors = [];
     if (0 < this.rowIdx) {
-      const neighbor = grid[this.rowIdx - 1][this.colIdx];
+      const neighbor = grid[this.rowIdx - distance][this.colIdx];
       neighbors.push(neighbor);
     }
-    if (this.rowIdx < grid.length - 1) {
-      const neighbor = grid[this.rowIdx + 1][this.colIdx];
+    if (this.rowIdx < grid.length - distance) {
+      const neighbor = grid[this.rowIdx + distance][this.colIdx];
       neighbors.push(neighbor);
     }
     if (0 < this.colIdx) {
-      const neighbor = grid[this.rowIdx][this.colIdx - 1];
+      const neighbor = grid[this.rowIdx][this.colIdx - distance];
       neighbors.push(neighbor);
     }
-    if (this.colIdx < grid[this.rowIdx].length - 1) {
-      const neighbor = grid[this.rowIdx][this.colIdx + 1];
+    if (this.colIdx < grid[this.rowIdx].length - distance) {
+      const neighbor = grid[this.rowIdx][this.colIdx + distance];
       neighbors.push(neighbor);
     }
+    return neighbors;
+  }
+
+  getUnvisitedNeighbors(grid: NodeService[][]) {
+    const neighbors = this.getNeighbors(grid, 1);
     const unvisitedNeighbors = neighbors.filter(
       (node) => !node.isBlocked && !node.isVisited
     );

@@ -6,6 +6,7 @@ import { COLS, ROWS } from "../constants";
 import { useAStar } from "../hooks/useAStar";
 import { useDijkstra } from "../hooks/useDijkstra";
 import { useGrid } from "../hooks/useGrid";
+import { useMaze } from "../hooks/useMaze";
 import { useStatus } from "../hooks/useStatus";
 
 // ----------- STYLED COMPONENTS -----------
@@ -47,6 +48,7 @@ const Dijkstra: React.FC<DijkstraProps> = () => {
   const { status, setStatus, onClick } = useStatus(generateGrid);
   const { runDijkstra } = useDijkstra(grid, setGrid, status, setStatus);
   const { runAStar } = useAStar(grid, setGrid, status, setStatus);
+  const { generateMaze } = useMaze(status, grid, setGrid, runDijkstra);
   return (
     <>
       <Header
@@ -56,6 +58,7 @@ const Dijkstra: React.FC<DijkstraProps> = () => {
         // algorithmFn={runDijkstra}
         algorithmFn={runAStar}
       />
+      <button onClick={generateMaze}>maze</button>
       <Main>
         <Grid
           onContextMenu={(e) => e.preventDefault()}
