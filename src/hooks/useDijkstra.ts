@@ -1,15 +1,15 @@
+import { LOOP_DELAY } from "../constants";
+import { timer } from "../utils";
 import { NodeService } from "./useNode";
 import { Status } from "./useStatus";
-import { useTimer } from "./useTimer";
 
 export const useDijkstra = (
   grid: NodeService[][],
   setGrid: React.Dispatch<React.SetStateAction<NodeService[][]>>,
   status: Status,
-  setStatus: React.Dispatch<React.SetStateAction<Status>>
+  setStatus: React.Dispatch<React.SetStateAction<Status>>,
+  isLoopDelay: boolean
 ) => {
-  const { timer } = useTimer(status);
-
   const sortByDistance = (flatGrid: NodeService[]) =>
     flatGrid.sort((a, b) => a.distance - b.distance);
 
@@ -23,8 +23,8 @@ export const useDijkstra = (
     for (let i = 0; i < pathNodes.length; i++) {
       pathNodes[i].isPath = true;
       setGrid([...grid]);
-      if (status !== "finished") {
-        await timer();
+      if (isLoopDelay && status !== "finished") {
+        await timer(LOOP_DELAY);
       }
     }
     return;
@@ -66,8 +66,8 @@ export const useDijkstra = (
         node.previousNode = closestNode;
       });
       setGrid([...grid]);
-      if (status !== "finished") {
-        await timer();
+      if (isLoopDelay && status !== "finished") {
+        await timer(LOOP_DELAY);
       }
     }
   };

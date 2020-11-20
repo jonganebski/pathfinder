@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Header from "../Components/Header";
 import Node from "../Components/Node";
 import { COLS, ROWS } from "../constants";
 import { useAStar } from "../hooks/useAStar";
+import { useChooseAlgorithm } from "../hooks/useChooseAlgorithm";
 import { useDijkstra } from "../hooks/useDijkstra";
 import { useGrid } from "../hooks/useGrid";
 import { useMaze } from "../hooks/useMaze";
@@ -34,10 +35,11 @@ const Grid = styled.div`
 interface DijkstraProps {}
 
 const Dijkstra: React.FC<DijkstraProps> = () => {
+  const [isLoopDelay, setIsLoopDelay] = useState(true);
   const {
     grid,
     setGrid,
-    generateGrid,
+    initializeGrid,
     movingStartPoint,
     setMovingStartPoint,
     movingEndPoint,
@@ -45,20 +47,44 @@ const Dijkstra: React.FC<DijkstraProps> = () => {
     lastStartNode,
     lastEndNode,
   } = useGrid();
-  const { status, setStatus, onClick } = useStatus(generateGrid);
-  const { runDijkstra } = useDijkstra(grid, setGrid, status, setStatus);
-  const { runAStar } = useAStar(grid, setGrid, status, setStatus);
-  const { generateMaze } = useMaze(status, grid, setGrid, runDijkstra);
+  const { status, setStatus, onClickStart, onClickInitialize } = useStatus(
+    grid,
+    setGrid,
+    initializeGrid
+  );
+  const { runDijkstra } = useDijkstra(
+    grid,
+    setGrid,
+    status,
+    setStatus,
+    isLoopDelay
+  );
+  const { runAStar } = useAStar(grid, setGrid, status, setStatus, isLoopDelay);
+  const { generateMaze } = useMaze(setStatus, grid, setGrid, isLoopDelay);
+  const { algorithm, setAlgorithm } = useChooseAlgorithm();
+
+  const getAlgorithmFn = () => {
+    if (algorithm === "AStar") {
+      return runAStar;
+    }
+    if (algorithm === "Dijkstra") {
+      return runDijkstra;
+    }
+  };
+
   return (
     <>
       <Header
         status={status}
         setStatus={setStatus}
-        onClick={onClick}
-        // algorithmFn={runDijkstra}
-        algorithmFn={runAStar}
+        onClickStart={onClickStart}
+        onClickInitialize={onClickInitialize}
+        algorithmFn={getAlgorithmFn()}
+        generateMaze={generateMaze}
+        setAlgorithm={setAlgorithm}
+        setIsLoopDelay={setIsLoopDelay}
       />
-      <button onClick={generateMaze}>maze</button>
+
       <Main>
         <Grid
           onContextMenu={(e) => e.preventDefault()}
@@ -81,8 +107,7 @@ const Dijkstra: React.FC<DijkstraProps> = () => {
                 lastStartNode={lastStartNode}
                 lastEndNode={lastEndNode}
                 status={status}
-                // runDijkstra={runDijkstra}
-                runDijkstra={runAStar}
+                algorithmFn={getAlgorithmFn()}
               />
             ))
           )}

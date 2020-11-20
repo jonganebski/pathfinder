@@ -1,3 +1,5 @@
+import { Algorithm } from "./hooks/useChooseAlgorithm";
+
 export const ROWS = 31;
 export const COLS = 61;
 

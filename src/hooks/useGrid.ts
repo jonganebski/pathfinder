@@ -10,7 +10,7 @@ export const useGrid = () => {
   const lastStartNode = useRef<NodeService>();
   const lastEndNode = useRef<NodeService>();
 
-  const generateGrid = () => {
+  const initializeGrid = () => {
     const baseArray: number[][] = Array(ROWS).fill(Array(COLS).fill(0));
     const grid = baseArray.map((row, rowIdx) =>
       row.map((_, colIdx) => new NodeService(rowIdx, colIdx))
@@ -21,13 +21,13 @@ export const useGrid = () => {
   };
 
   useEffect(() => {
-    generateGrid();
+    initializeGrid();
   }, []);
 
   return {
     grid,
     setGrid,
-    generateGrid,
+    initializeGrid,
     movingStartPoint,
     setMovingStartPoint,
     movingEndPoint,

@@ -1,15 +1,15 @@
 import { NodeService } from "./useNode";
 import { Status } from "./useStatus";
-import { useTimer } from "./useTimer";
+import { timer } from "../utils";
+import { LOOP_DELAY } from "../constants";
 
 export const useAStar = (
   grid: NodeService[][],
   setGrid: React.Dispatch<React.SetStateAction<NodeService[][]>>,
   status: Status,
-  setStatus: React.Dispatch<React.SetStateAction<Status>>
+  setStatus: React.Dispatch<React.SetStateAction<Status>>,
+  isLoopDelay: boolean
 ) => {
-  const { timer } = useTimer(status);
-
   const sortByDistance = (flatGrid: NodeService[]) =>
     flatGrid.sort((a, b) => {
       let compare;
@@ -30,8 +30,8 @@ export const useAStar = (
     for (let i = 0; i < pathNodes.length; i++) {
       pathNodes[i].isPath = true;
       setGrid([...grid]);
-      if (status !== "finished") {
-        await timer();
+      if (isLoopDelay && status !== "finished") {
+        await timer(LOOP_DELAY);
       }
     }
     return;
@@ -43,17 +43,10 @@ export const useAStar = (
 
     return Math.sqrt(Math.pow(row, 2) + Math.pow(col, 2));
   };
-  //   const getManhattanDistance = (NodeA: NodeService, NodeB: NodeService) => {
-  //     const distance =
-  //       Math.abs(NodeA.rowIdx - NodeB.rowIdx) +
-  //       Math.abs(NodeA.colIdx - NodeB.colIdx);
-
-  //     return distance;
-  //   };
 
   const runAStar = async () => {
-    const visitedNodes: NodeService[] = [];
     const unvisitedNodes = grid.flat();
+    const visitedNodes: NodeService[] = [];
     const startNode = unvisitedNodes.find((node) => node.isStart);
     const endNode = unvisitedNodes.find((node) => node.isEnd);
     if (!startNode) {
@@ -95,8 +88,8 @@ export const useAStar = (
         node.previousNode = closestNode;
       });
       setGrid([...grid]);
-      if (status !== "finished") {
-        await timer();
+      if (isLoopDelay && status !== "finished") {
+        await timer(LOOP_DELAY);
       }
     }
   };

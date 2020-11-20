@@ -101,9 +101,12 @@ export const useNode = (
   lastStartNode: React.MutableRefObject<NodeService | undefined>,
   lastEndNode: React.MutableRefObject<NodeService | undefined>,
   status: Status,
-  startDijkstra: () => Promise<void>
+  algorithmFn: (() => Promise<void>) | undefined
 ) => {
   const onMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (status === "running") {
+      return;
+    }
     e.preventDefault();
     const { isStart, isEnd } = NodeService;
     if (e.button === 0) {
@@ -123,12 +126,18 @@ export const useNode = (
   };
 
   const onMouseUp = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (status === "running") {
+      return;
+    }
     e.preventDefault();
     setMovingStartPoint(false);
     setMovingEndPoint(false);
   };
 
   const onMouseEnter = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (status === "running") {
+      return;
+    }
     e.preventDefault();
     if (e.buttons === 1) {
       if (
@@ -162,7 +171,9 @@ export const useNode = (
             node.heuristicDistance = Infinity;
           })
         );
-        startDijkstra();
+        if (algorithmFn !== undefined) {
+          algorithmFn();
+        }
       }
       setGrid((prev) => [...prev!]);
     }

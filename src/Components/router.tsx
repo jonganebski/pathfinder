@@ -1,7 +1,7 @@
 import React from "react";
 import { HashRouter, Route, Switch } from "react-router-dom";
 import styled from "styled-components";
-import Dijkstra from "../routes/Dijkstra";
+import Pathfinder from "../routes/Pathfinder";
 
 // ----------- STYLED COMPONENTS -----------
 
@@ -16,7 +16,7 @@ const Router = () => {
     <HashRouter>
       <Wrapper>
         <Switch>
-          <Route exact path="/dijkstra" component={Dijkstra} />
+          <Route exact path="/pathfinder" component={Pathfinder} />
         </Switch>
       </Wrapper>
     </HashRouter>
