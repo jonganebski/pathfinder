@@ -18,6 +18,10 @@ export class NodeService {
   previousNode: NodeService | null = null;
   isPath = false;
 
+  getTotalDistance() {
+    return this.distance + this.heuristicDistance;
+  }
+
   getValue() {
     if (this.isStart) {
       return this.startValue;
@@ -25,7 +29,6 @@ export class NodeService {
     if (this.isEnd) {
       return this.endValue;
     }
-    return null;
   }
 
   unblockNodeBetween(grid: NodeService[][], targetNode: NodeService) {

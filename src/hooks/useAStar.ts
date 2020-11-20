@@ -13,9 +13,9 @@ export const useAStar = (
   const sortByDistance = (flatGrid: NodeService[]) =>
     flatGrid.sort((a, b) => {
       let compare;
-      compare = a.heuristicDistance - b.heuristicDistance;
+      compare = a.getTotalDistance() - b.getTotalDistance();
       if (compare === 0) {
-        compare = a.distance - b.distance;
+        compare = a.heuristicDistance - b.heuristicDistance;
       }
       return compare;
     });
@@ -40,7 +40,7 @@ export const useAStar = (
   const getManhattanDistance = (NodeA: NodeService, NodeB: NodeService) => {
     const row = Math.abs(NodeA.rowIdx - NodeB.rowIdx);
     const col = Math.abs(NodeA.colIdx - NodeB.colIdx);
-
+    // return row + col;
     return Math.sqrt(Math.pow(row, 2) + Math.pow(col, 2));
   };
 
@@ -59,6 +59,7 @@ export const useAStar = (
     }
     startNode.distance = 0;
     startNode.heuristicDistance = 0;
+    console.log(startNode.getTotalDistance());
     while (unvisitedNodes.length !== 0) {
       sortByDistance(unvisitedNodes);
       const closestNode = unvisitedNodes.shift();
@@ -83,7 +84,7 @@ export const useAStar = (
       const unvisitedNeighbors = closestNode.getUnvisitedNeighbors(grid);
       unvisitedNeighbors.forEach((node) => {
         const heuristic = getManhattanDistance(node, endNode);
-        node.distance = closestNode.distance + 1 + heuristic;
+        node.distance = closestNode.distance + 1;
         node.heuristicDistance = heuristic;
         node.previousNode = closestNode;
       });
