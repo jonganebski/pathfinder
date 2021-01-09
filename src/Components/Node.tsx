@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { COLOR } from "../constants";
 import { NodeService, useNode } from "../hooks/useNode";
 import { Status } from "../hooks/useStatus";
 
@@ -12,20 +13,26 @@ interface DivProps {
 }
 
 const Div = styled.div<DivProps>`
+  margin: ${({ isBlocked }) => (isBlocked ? "-1px" : "none")};
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: ${({ isBlocked, isVisited, isPath }) =>
     isBlocked
-      ? "black"
+      ? COLOR.BLOCK
       : isPath
-      ? "yellow"
+      ? COLOR.PATH
       : isVisited
-      ? "tomato"
-      : "whitesmoke"};
+      ? COLOR.VISITED
+      : COLOR.NODE};
   cursor: ${({ isStart, isEnd }) => (isStart || isEnd) && "pointer"};
+
   transition: ${({ isVisited }) =>
     isVisited && "background-color 0.3s ease-in-out"};
+`;
+
+const Span = styled.span`
+  z-index: 10;
 `;
 
 interface NodeProps {
@@ -78,7 +85,9 @@ const Node: React.FC<NodeProps> = ({
       isPath={isPath}
       {...mouseEventHandlers}
     >
-      {NodeService.getValue()}
+      <Span role="img" aria-label="imoji">
+        {NodeService.getValue()}
+      </Span>
     </Div>
   );
 };

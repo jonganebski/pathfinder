@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import Header from "../Components/Header";
+import ControlBox from "../Components/ControlBox";
 import Node from "../Components/Node";
-import { COLS, ROWS } from "../constants";
+import { COLOR, COLS, ROWS } from "../constants";
 import { useAStar } from "../hooks/useAStar";
 import { useChooseAlgorithm } from "../hooks/useChooseAlgorithm";
 import { useDijkstra } from "../hooks/useDijkstra";
@@ -13,28 +13,29 @@ import { useStatus } from "../hooks/useStatus";
 // ----------- STYLED COMPONENTS -----------
 
 const Main = styled.main`
-  margin: 50px 0px 50px 0px;
   display: grid;
-  flex-direction: column;
+  grid-template-columns: 5fr 1fr;
+`;
+
+const Container = styled.section`
+  display: flex;
   align-items: center;
   justify-content: center;
 `;
 
 const Grid = styled.div`
-  width: 100%;
+  /* width: 100%; */
   display: grid;
-  grid-template-columns: repeat(${COLS}, minmax(10px, 22px));
-  grid-template-rows: repeat(${ROWS}, minmax(10px, 22px));
+  grid-template-columns: repeat(${COLS}, minmax(10px, 20px));
+  grid-template-rows: repeat(${ROWS}, minmax(10px, 20px));
   grid-gap: 1px;
-  background-color: steelblue;
-  border: 1px solid steelblue;
+  background-color: ${COLOR.GRID_GAP};
+  border: 1px solid ${COLOR.GRID_GAP};
 `;
 
 // ----------- MAIN COMPONENTS -----------
 
-interface DijkstraProps {}
-
-const Dijkstra: React.FC<DijkstraProps> = () => {
+const Pathfinder = () => {
   const [isLoopDelay, setIsLoopDelay] = useState(true);
   const {
     grid,
@@ -73,19 +74,8 @@ const Dijkstra: React.FC<DijkstraProps> = () => {
   };
 
   return (
-    <>
-      <Header
-        status={status}
-        setStatus={setStatus}
-        onClickStart={onClickStart}
-        onClickInitialize={onClickInitialize}
-        algorithmFn={getAlgorithmFn()}
-        generateMaze={generateMaze}
-        setAlgorithm={setAlgorithm}
-        setIsLoopDelay={setIsLoopDelay}
-      />
-
-      <Main>
+    <Main>
+      <Container>
         <Grid
           onContextMenu={(e) => e.preventDefault()}
           onMouseLeave={() => {
@@ -112,9 +102,19 @@ const Dijkstra: React.FC<DijkstraProps> = () => {
             ))
           )}
         </Grid>
-      </Main>
-    </>
+      </Container>
+      <ControlBox
+        status={status}
+        setStatus={setStatus}
+        onClickStart={onClickStart}
+        onClickInitialize={onClickInitialize}
+        algorithmFn={getAlgorithmFn()}
+        generateMaze={generateMaze}
+        setAlgorithm={setAlgorithm}
+        setIsLoopDelay={setIsLoopDelay}
+      />
+    </Main>
   );
 };
 
-export default Dijkstra;
+export default Pathfinder;
